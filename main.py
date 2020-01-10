@@ -1,5 +1,9 @@
 import pandas as pd
 import time
+from multiprocessing.pool import ThreadPool
+
+#import seaborn as pd
+
 cluster_df = pd.read_csv('address_clust.csv')
 stats_df = pd.read_csv('address_stats.csv')
 #1
@@ -23,12 +27,12 @@ zero_to_second = 0
 first_fee = 0
 second_fee = 0
 
-for i in range(len(transactions)):
+def check_tr(i):
+    global first_to_second,second_to_first,first_to_zero,zero_to_first,second_to_zero,zero_to_second,first_fee,second_fee
     transaction_df = cluster_df.loc[(cluster_df['transaction_id'] == transactions[i])]
     first = None
     second = None
     zero = None
-
     if (len(transaction_df.cluster_id.unique()) > 1):
         # First task
         if ((any(transaction_df.cluster_id == 1)) and (any(transaction_df.cluster_id == 2))):
@@ -98,7 +102,10 @@ for i in range(len(transactions)):
             if second_sent != 0:
                 second_fee += second_sent - transaction_df['received'].sum()
 
-
+pool = ThreadPool(1)
+#
+for i in pool.imap_unordered(check_tr, range(0,len(transactions) - 1)):
+    pass
 print('Done',time.time() - start)
 
 print('From the first to the second cluster', first_to_second/100000000)
