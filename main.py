@@ -30,9 +30,10 @@ zero_to_second = manager.list()
 
 first_fee = manager.list()
 second_fee = manager.list()
-
+b = cluster_df.to_numpy()
+print(b[:,3])
 def check_tr(i):
-    global first_to_second,second_to_first,first_to_zero,zero_to_first,second_to_zero,zero_to_second,first_fee,second_fee
+
     transaction_df = cluster_df.loc[(cluster_df['transaction_id'] == transactions[i])]
     first = None
     second = None
@@ -41,8 +42,8 @@ def check_tr(i):
         # First task
         if ((any(transaction_df.cluster_id == 1)) and (any(transaction_df.cluster_id == 2))):
 
-            first = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 1)]
-            second = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 2)]
+            first = transaction_df.loc[(transaction_df['cluster_id'] == 1)]
+            second = transaction_df.loc[(transaction_df['cluster_id'] == 2)]
 
             first_sent = first['sent'].sum()
             first_received = first['received'].sum()
@@ -58,9 +59,9 @@ def check_tr(i):
 
         if ((any(transaction_df.cluster_id == 1)) and (any(transaction_df.cluster_id == 0))):
             if first is None:
-                first = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 1)]
+                first = transaction_df.loc[(transaction_df['cluster_id'] == 1)]
 
-            zero = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 0)]
+            zero = transaction_df.loc[(transaction_df['cluster_id'] == 0)]
 
             first_sent = first['sent'].sum()
             first_received = first['received'].sum()
@@ -76,8 +77,9 @@ def check_tr(i):
 
         if ((any(transaction_df.cluster_id == 2)) and (any(transaction_df.cluster_id == 0))):
             if second is None:
-                second = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 2)]
-            zero = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 0)]
+                second = transaction_df.loc[(transaction_df['cluster_id'] == 2)]
+            if zero is None:
+                zero = transaction_df.loc[(transaction_df['cluster_id'] == 0)]
 
             second_sent = second['sent'].sum()
             second_received = second['received'].sum()
@@ -93,19 +95,21 @@ def check_tr(i):
 
         if ((any(transaction_df.cluster_id == 1)) or (any(transaction_df.cluster_id == 2))):
             if first is None:
-                first = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 1)]
+                first = transaction_df.loc[(transaction_df['cluster_id'] == 1)]
+
             if second is None:
-                second = transaction_df.loc[(transaction_df['transaction_id'] == transactions[i]) & (transaction_df['cluster_id'] == 2)]
+                second = transaction_df.loc[(transaction_df['cluster_id'] == 2)]
 
             first_sent = first['sent'].sum()
             second_sent = second['sent'].sum()
 
             if first_sent != 0:
                 first_fee.append(first_sent - transaction_df['received'].sum())
+
             if second_sent != 0:
                 second_fee.append(second_sent - transaction_df['received'].sum())
 
-pool = Pool(4)
+pool = Pool(8)
 #
 for i in pool.imap_unordered(check_tr, range(0,len(transactions) - 1)):
     pass
