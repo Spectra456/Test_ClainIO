@@ -5,8 +5,7 @@
 
 > Tested on Linux and Mac os
 
-**Results:
-**
+**Results:**
 > 
 Amount of sent bitcoins from the first cluster to the second cluster 64.62162
 > 
