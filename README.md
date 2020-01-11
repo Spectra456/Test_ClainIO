@@ -3,7 +3,7 @@
 - pandas 0.24.2
 - numpy 1.16.1
 
-> Tested on Linux and Mac os
+> Tested on Linux and Mac OS
 
 **Results:**
 > 
