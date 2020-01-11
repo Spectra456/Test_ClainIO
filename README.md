@@ -2,6 +2,7 @@
 Requirements
 - pandas 0.24.2
 - numpy 1.16.1
+Tested on Linux and Mac OS
 
 Amount of sent bitcoins from the first cluster to the second cluster 64.62162
 
